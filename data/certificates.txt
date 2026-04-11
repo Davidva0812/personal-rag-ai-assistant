@@ -1,0 +1,37 @@
+# Certificates of David Varga
+
+At Google Cloud Skills Boost, I completed the following courses:
+- Generative AI & LLM Fundamentals & Responsible AI (In Progress)
+- GenAI vs Discriminative AI, Large Language Models, Prompt Engineering, Model Tuning, Responsible AI
+
+At Cisco Networking Academy, I completed the following courses:
+- Introduction to Cybersecurity
+- Networking Basics, Threat Actors, White/Gray/Black Hat Hacking, Security Ethics
+
+At Udemy, I completed the following courses:
+- Complete Front-End Development Course
+- HTML, CSS, JavaScript, Bootstrap, React, Angular
+- The Complete Web Development Bootcamp
+- HTML, CSS, JavaScript, Node.js, Express, MongoDB, REST APIs, Git
+- Python Bootcamp London: 100 Days of Code
+- OOP, Flask, automation, web scraping, and full-stack mini-projects.
+
+At freeCodeCamp, I completed the following courses:
+- JavaScript Algorithms and Data Structures
+- ES6, data structures, algorithms, functional and object-oriented programming.
+
+At Gerilla Mentor Klub, I completed the following courses:
+- Front-End Web Development
+- HTML, CSS, Bootstrap fundamentals
+- Version Control
+- Git & GitHub for developers
+- Data Processing with Python
+- Working with files, parsing, and basic data handling
+- Advanced Python
+- Functional programming, modules, advanced data structures
+
+At Mimo App, I completed the following courses:
+- JavaScript and React Basics
+- Core fundamentals and component logic
+- HTML & CSS Fundamentals
+- Basic structure and styling

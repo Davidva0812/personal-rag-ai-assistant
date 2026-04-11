@@ -1,0 +1,28 @@
+# Professional Experience of David Varga
+
+
+Software Developer Intern
+POMS Cloud Ltd
+Frontend & CMS Development: Developed responsive web interfaces and creative digital assets for high-profile clients using Joomla, WordPress, and YOOtheme.
+AI Integration: Leveraged Prompt Engineering and advanced AI tools to accelerate development cycles, automate repetitive tasks, and enhance SEO optimization workflows.
+Full-Stack Collaboration: Contributed to backend logic implementation and database management to ensure seamless data flow and application stability.
+Campaign Management: Developed and deployed Master Banners and digital assets for globally recognized brands.
+Agile Methodology: Actively participated in a fast-paced Agile/Scrum environment, including daily stand-ups and sprint planning.
+
+Skills: Git · WordPress · Agile Environment · Teamwork · Microsoft Visual Studio Code · Trello · Search Engine Optimization (SEO) · Joomla! · Problem Solving · Web Development · GitHub
+
+Junior Software Developer – Self-Learning / Portfolio Projects
+2024 - Present · 2 yrs 3 mos
+🚀 Managing a portfolio of 14+ independent software projects focusing on AI integration and Full-Stack development.
+🔧 Core Tech Stack: Python (FastAPI), React, Docker, SQL, LangChain, ChromaDB.
+
+Key Achievements:
+AI-Native Development: Built a RAG pipeline using Llama 3 for document analysis.
+Full-Stack Architecture: Developed responsive SPAs with React and integrated them with Python backends.
+Game Engineering: Architected a complex RPG logic in PyGame with a dedicated web ecosystem.
+API Integration: Implemented real-time data processing using REST APIs (OpenWeather, etc.).
+🎓 Continuous Learning: Actively applying certifications from Google, Cisco, and freeCodeCamp to real-world code.
+
+Skills: Machine Learning · Python (Programming Language) · Retrieval-Augmented Generation (RAG) · Microsoft Visual Studio Code · React.js · Flask · JSON · Problem Solving · Web Development · Pycharm · GitHub
+
+

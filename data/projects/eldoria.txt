@@ -1,0 +1,27 @@
+Tales of Eldoria
+An immersive Fantasy RPG where I implemented complex game mechanics from scratch. The project focuses on Object-Oriented Programming and AI simulations.
+
+✨ Autonomous NPCs and places: Integrated AI-driven movement patterns.
+⚔️ Combat Engine: Logic-heavy turn-based system.
+📜 Unique classes with their own mana/stamina & abilities.
+🐕 Companions for the every class system.
+🛡️ Inventory, tactical item usagen: weapons, armor, relics, potions.
+🌏 Unique fantasy map: different places with enemies to explore.
+🎵 Ambient fantasy soundtrack with mute/unmute, volume-control and UI.
+
+The World of Eldoria
+Eldoria is a realm shaped by ancient magic, shadowed ruins, and radiant sanctuaries. From the bustling heart of its main town to the eerie stillness of its forgotten corners, every place tells a tale. Below you will find a glimpse into the diverse and mystical locations waiting to be explored.
+
+Town of Eldoria: The central hub of civilization and respite. Here, travelers can rest, trade, and prepare for the dangers that lie beyond the gates.
+Laboratory - Brew powerful potions and elixirs using rare ingredients.
+Blacksmith - Forge weapons, armor, and magical gear.
+Tavern - Rest, gather rumors, and meet potential companions.
+Wilderness & Exploration: The wild lands of Eldoria are filled with mystery, danger, and ancient secrets.
+Cemetery - Haunted grounds where the dead don't always rest.
+Dark Forest - Twisting paths and hidden creatures lurk beneath the canopy.
+Haunted Ruin - Echoes of a lost age, watched by spirits of the past.
+Enchanted Forest - A place of natural beauty where magic thrives in every leaf and stone.
+Frostfang Peaks - Icy mountains home to ancient beasts and frozen mysteries.
+Sunken Temple - Submerged halls whispering forgotten rituals.
+Crimson Castle - A fortress stained with blood and cloaked in a perpetual twilight.
+Chapel - A sanctuary of peace. No foes dwell within these hallowed halls.

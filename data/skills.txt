@@ -1,0 +1,55 @@
+# Skills of David Varga
+
+
+Agile Environment
+API Development
+Artificial Intelligence (AI)
+Bootstrap (Framework)
+Cascading Style Sheets (CSS)
+Cybersecurity Fundamentals
+Data processing with Python
+Data Structures
+Databases
+Document Object Model (DOM)
+ECMAScript
+English
+ES6
+Flask
+Front-End Web Development
+Generative AI
+Git
+GitHub
+HTML
+HTML5
+Information Security
+JavaScript
+Joomla!
+JSON
+Large Language Models (LLM)
+Machine Learning
+Matplotlib
+Microsoft Visual Studio Code
+Natural Language Processing (NLP)
+Network Security
+NumPy
+Object-Oriented Programming (OOP)
+Pandas
+Plotly
+Problem Solving
+Prompt Engineering
+Pycharm
+Python (Programming Language)
+Python Advanced
+RAG (Retrieval-Augmented Generation)
+React.js
+Responsive Web Design
+REST APIs
+Search Engine Optimization (SEO)
+SQL
+Teamwork
+Threat Analysis
+Tkinter
+Trello
+Version Control
+Web Development
+WordPress
