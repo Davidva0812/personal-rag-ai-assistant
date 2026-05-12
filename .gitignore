@@ -7,11 +7,6 @@ venv/
 env/
 .env
 
-# Database & Storage
-chroma_db/
-*.db
-*.log
-
 # Document processing
 uploads/
 temp/

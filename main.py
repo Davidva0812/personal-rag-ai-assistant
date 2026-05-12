@@ -35,7 +35,7 @@ app.add_middleware(
 # --- AI ENGINE INITIALIZATION (Executes once on startup) ---
 if not os.path.exists("./chroma_db") or len(os.listdir("./chroma_db")) == 0:
     print("No database found. Running ingestion...")
-    create_vector_db()
+    #create_vector_db()
 else:
     print("Database found, loading...")
 
