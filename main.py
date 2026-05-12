@@ -6,7 +6,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from ingest import create_vector_db
 # LangChain és AI components
 from langchain_groq import ChatGroq
-from langchain_huggingface import HuggingFaceEmbeddings
+from langchain_community.embeddings import HuggingFaceInferenceAPIEmbeddings
 from langchain_community.vectorstores import Chroma
 
 load_dotenv()
@@ -32,8 +32,11 @@ if not os.path.exists("./chroma_db") or len(os.listdir("./chroma_db")) == 0:
     create_vector_db()
 else:
     print("Database found, loading...")
-    
-embeddings = HuggingFaceEmbeddings(model_name="all-MiniLM-L6-v2")
+
+embeddings = HuggingFaceInferenceAPIEmbeddings(
+    api_key=os.getenv("HUGGINGFACEHUB_API_TOKEN"), 
+    model_name="sentence-transformers/all-MiniLM-L6-v2"
+)
 vector_db = Chroma(persist_directory="./chroma_db", embedding_function=embeddings)
 llm = ChatGroq(temperature=0, model_name="llama-3.1-8b-instant")
 

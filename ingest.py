@@ -1,7 +1,7 @@
 import os
 import shutil
 from langchain_community.document_loaders import TextLoader, PyPDFLoader
-from langchain_huggingface import HuggingFaceEmbeddings
+from langchain_community.embeddings import HuggingFaceInferenceAPIEmbeddings
 from langchain_community.vectorstores import Chroma
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 
@@ -57,7 +57,10 @@ def create_vector_db():
     
     # 3. Vectorization (Embeddings)
     print(f"Vectorizing {len(splits)} chunks...")
-    embeddings = HuggingFaceEmbeddings(model_name="all-MiniLM-L6-v2")
+    embeddings = HuggingFaceInferenceAPIEmbeddings(
+    api_key=os.getenv("HUGGINGFACEHUB_API_TOKEN"), 
+    model_name="sentence-transformers/all-MiniLM-L6-v2"
+    )
 
     # 4. Save to ChromaDB
     vector_db = Chroma.from_documents(
