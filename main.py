@@ -3,7 +3,7 @@ from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
 from dotenv import load_dotenv
 from fastapi.middleware.cors import CORSMiddleware
-
+from ingest import create_vector_db
 # LangChain és AI components
 from langchain_groq import ChatGroq
 from langchain_huggingface import HuggingFaceEmbeddings
@@ -27,6 +27,12 @@ app.add_middleware(
 )
 
 # --- AI ENGINE INITIALIZATION (Executes once on startup) ---
+if not os.path.exists("./chroma_db") or len(os.listdir("./chroma_db")) == 0:
+    print("No database found. Running ingestion...")
+    create_vector_db()
+else:
+    print("Database found, loading...")
+    
 embeddings = HuggingFaceEmbeddings(model_name="all-MiniLM-L6-v2")
 vector_db = Chroma(persist_directory="./chroma_db", embedding_function=embeddings)
 llm = ChatGroq(temperature=0, model_name="llama-3.1-8b-instant")
