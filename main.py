@@ -16,7 +16,7 @@ app = FastAPI(title="David Varga Portfolio API")
 
 token = os.getenv("HUGGINGFACEHUB_API_TOKEN")
 if token:
-    print(f"HuggingFace Token found: {token[:4]}***")
+    print(f"HuggingFace Token found!")
 else:
     print("ERROR: HuggingFace Token NOT FOUND in environment variables!")
 
@@ -108,5 +108,6 @@ async def chat_endpoint(request: ChatRequest):
 # --- START SERVER ---
 if __name__ == "__main__":
     import uvicorn
+    import os
     port = int(os.environ.get("PORT", 10000))
     uvicorn.run(app, host="0.0.0.0", port=port)
