@@ -17,8 +17,10 @@ app = FastAPI(title="David Varga Portfolio API")
 # --- CORS SETTINGS ---
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["https://davidva0812.github.io/Personal-portfolio"
-                   "http://localhost:3000",],  # Wildcard allowed for portfolio demonstration and easy local testing
+    allow_origins=[
+        "https://davidva0812.github.io",  # Just the domain
+        "http://localhost:3000",  
+    ],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
