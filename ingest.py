@@ -38,39 +38,65 @@ def load_documents():
     print(f"\n--- DONE! Total documents loaded: {len(docs)} ---")
     return docs
 
+import os
+import shutil
+import time
+from langchain_community.vectorstores import Chroma
+from langchain_community.embeddings import HuggingFaceInferenceAPIEmbeddings
+from langchain.text_splitter import RecursiveCharacterTextSplitter
+
 def create_vector_db():
-    # Clear old database for a fresh start
+    # Az útvonal marad a régi
     db_path = "./chroma_db"
+    
     if os.path.exists(db_path):
         print("Removing old vector database...")
         shutil.rmtree(db_path)
 
-    # 1. Load all files
+    # 1. Dokumentumok betöltése
     docs = load_documents()
     if not docs:
         print("No documents found. Aborting.")
         return
     
-    # 2. Chunking (1000 chars to keep project details and work history together)
+    # 2. Darabolás
     text_splitter = RecursiveCharacterTextSplitter(chunk_size=1000, chunk_overlap=150)
     splits = text_splitter.split_documents(docs)
     
-    # 3. Vectorization (Embeddings)
-    print(f"Vectorizing {len(splits)} chunks...")
+    # 3. Embedding beállítása (API-val, hogy ne egye a RAM-ot)
     embeddings = HuggingFaceInferenceAPIEmbeddings(
-    api_key=os.getenv("HUGGINGFACEHUB_API_TOKEN"), 
-    model_name="sentence-transformers/all-MiniLM-L6-v2"
+        api_key=os.getenv("HUGGINGFACEHUB_API_TOKEN"), 
+        model_name="sentence-transformers/all-MiniLM-L6-v2"
     )
-
     embeddings.additional_headers = {"X-Wait-For-Model": "true"}
 
-    # 4. Save to ChromaDB
-    vector_db = Chroma.from_documents(
-        documents=splits, 
-        embedding=embeddings, 
-        persist_directory=db_path
-    )
-    print(f"Success! The AI now has access to the CV and all 14 projects in '{db_path}'.")
+    # 4. Mentés ChromaDB-be (ADAGOKBAN / BATCHES)
+    print(f"Vectorizing {len(splits)} chunks in small batches to save memory and API limit...")
+    
+    batch_size = 5  # Egyszerre csak 5 chunkot küldünk el
+    vector_db = None
+
+    for i in range(0, len(splits), batch_size):
+        batch = splits[i : i + batch_size]
+        
+        if vector_db is None:
+            # Az első adagnál létrehozzuk az adatbázist
+            vector_db = Chroma.from_documents(
+                documents=batch, 
+                embedding=embeddings, 
+                persist_directory=db_path
+            )
+        else:
+            # A többi adagot hozzáadjuk a létezőhöz
+            vector_db.add_documents(batch)
+        
+        print(f"Progress: {min(i + batch_size, len(splits))}/{len(splits)} chunks processed...")
+        
+        # Egy pici szünet, hogy a HuggingFace API ne érezze támadásnak
+        time.sleep(0.5)
+
+    print(f"Success! The AI now has access to the CV and all projects in '{db_path}'.")
+    return vector_db
 
 if __name__ == "__main__":
     create_vector_db()
