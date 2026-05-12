@@ -31,13 +31,11 @@ def create_vector_db():
     docs = load_documents()
     if not docs: return
     
-    # Kisebb darabokra bontjuk, hogy gyorsabb legyen
     text_splitter = RecursiveCharacterTextSplitter(chunk_size=600, chunk_overlap=100)
     splits = text_splitter.split_documents(docs)
     
     print(f"Vektorizálás helyi CPU-val ({len(splits)} egység)...")
     
-    # Ez a rész a legfontosabb:
     embeddings = HuggingFaceEmbeddings(model_name="all-MiniLM-L6-v2")
 
     vector_db = Chroma.from_documents(
