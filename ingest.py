@@ -73,7 +73,7 @@ def create_vector_db():
     # 4. Mentés ChromaDB-be (ADAGOKBAN / BATCHES)
     print(f"Vectorizing {len(splits)} chunks in small batches to save memory and API limit...")
     
-    batch_size = 5  # Egyszerre csak 5 chunkot küldünk el
+    batch_size = 2
     vector_db = None
 
     for i in range(0, len(splits), batch_size):
@@ -93,7 +93,7 @@ def create_vector_db():
         print(f"Progress: {min(i + batch_size, len(splits))}/{len(splits)} chunks processed...")
         
         # Egy pici szünet, hogy a HuggingFace API ne érezze támadásnak
-        time.sleep(0.5)
+        time.sleep(1.5)
 
     print(f"Success! The AI now has access to the CV and all projects in '{db_path}'.")
     return vector_db
