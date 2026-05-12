@@ -43,7 +43,7 @@ import shutil
 import time
 from langchain_community.vectorstores import Chroma
 from langchain_community.embeddings import HuggingFaceInferenceAPIEmbeddings
-from langchain.text_splitter import RecursiveCharacterTextSplitter
+from langchain_text_splitters import RecursiveCharacterTextSplitter
 
 def create_vector_db():
     # Az útvonal marad a régi
