@@ -62,6 +62,8 @@ def create_vector_db():
     model_name="sentence-transformers/all-MiniLM-L6-v2"
     )
 
+    embeddings.additional_headers = {"X-Wait-For-Model": "true"}
+
     # 4. Save to ChromaDB
     vector_db = Chroma.from_documents(
         documents=splits, 

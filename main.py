@@ -14,6 +14,12 @@ load_dotenv()
 # --- Inicialize FastAPI ---
 app = FastAPI(title="David Varga Portfolio API")
 
+token = os.getenv("HUGGINGFACEHUB_API_TOKEN")
+if token:
+    print(f"HuggingFace Token found: {token[:4]}***")
+else:
+    print("ERROR: HuggingFace Token NOT FOUND in environment variables!")
+
 # --- CORS SETTINGS ---
 app.add_middleware(
     CORSMiddleware,
@@ -37,6 +43,9 @@ embeddings = HuggingFaceInferenceAPIEmbeddings(
     api_key=os.getenv("HUGGINGFACEHUB_API_TOKEN"), 
     model_name="sentence-transformers/all-MiniLM-L6-v2"
 )
+
+embeddings.additional_headers = {"X-Wait-For-Model": "true"}
+
 vector_db = Chroma(persist_directory="./chroma_db", embedding_function=embeddings)
 llm = ChatGroq(temperature=0, model_name="llama-3.1-8b-instant")
 
@@ -99,4 +108,5 @@ async def chat_endpoint(request: ChatRequest):
 # --- START SERVER ---
 if __name__ == "__main__":
     import uvicorn
-    uvicorn.run(app, host="127.0.0.1", port=8000)
+    port = int(os.environ.get("PORT", 10000))
+    uvicorn.run(app, host="0.0.0.0", port=port)
