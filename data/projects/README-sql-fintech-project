@@ -1,0 +1,28 @@
+# FinTech Order & Transaction Management System (SQLite Edition)
+
+A production-ready asynchronous backend system built with **FastAPI** and **SQLite** that demonstrates advanced database engineering, data integrity protection, and complex analytical SQL queries in a zero-configuration, secure local environment.
+
+## 🛠️ Tech Stack
+- **Backend Framework:** FastAPI (Python 3.13+)
+- **Database:** SQLite (File-based, zero-setup)
+- **Database Driver:** `aiosqlite` (Asynchronous Python driver)
+- **Data Validation:** Pydantic v2
+
+## ⚙️ Key Database Features Demonstrated
+1. **Strict ACID Transactions:** The core order processing (`POST /api/orders`) uses raw, native SQL wrapped in a strict database transaction (`BEGIN TRANSACTION` / `COMMIT` / `ROLLBACK`). If any error occurs (e.g., stock outage mid-process), the system automatically triggers a `ROLLBACK` to guarantee absolute data consistency.
+2. **Built-in Isolation:** Leverages SQLite's native database-level write locks during transactions, inherently eliminating race conditions and preventing overselling during heavy parallel checkouts.
+3. **Data Integrity Protection:** Implements native database-level constraints (`CHECK`, `UNIQUE`, `FOREIGN KEY` constraints) and utilizes dynamic Python-side `Decimal` parsing to eliminate floating-point precision errors in financial tracking.
+4. **Auto-Initialization Schema:** The application dynamically detects the local database state on startup, automatically creating the file and seeding it with mock data if it doesn't already exist.
+
+## 📊 Analytical Queries Included (`/database/analytics_queries.sql`)
+- Top spending customer analysis via explicit `INNER JOIN`s and `GROUP BY` aggregations.
+- Monthly revenue trends tracking utilizing SQLite's time-series `strftime` functions.
+- Advanced product popularity ranking using modern SQL Window Functions (`DENSE_RANK() OVER (...)`).
+
+## 💻 How to Run Locally
+Since this version uses SQLite, **no external database installation or `.env` configuration is required.**
+
+1. Clone the repository.
+2. Run `pip install -r requirements.txt`.
+3. Start the server: `uvicorn app.main:app --reload`.
+4. Visit `http://127.0.0.1:8000/docs` for the interactive API documentation and test the transaction workflows!
