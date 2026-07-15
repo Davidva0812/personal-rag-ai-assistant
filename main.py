@@ -1,5 +1,6 @@
 import os
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, HTTPException, Request
+from fastapi.responses import JSONResponse
 from pydantic import BaseModel, Field
 from dotenv import load_dotenv
 from fastapi.middleware.cors import CORSMiddleware
@@ -7,11 +8,28 @@ from langchain_groq import ChatGroq
 from langchain_huggingface import HuggingFaceEndpointEmbeddings # Ezt használjuk az API-hoz
 from langchain_community.vectorstores import Chroma
 import bleach
+from slowapi import Limiter
+from slowapi.util import get_remote_address
+from slowapi.errors import RateLimitExceeded
 
 load_dotenv()
 
 # --- Inicialize FastAPI ---
 app = FastAPI(title="David Varga Portfolio API")
+
+# Inicializáljuk a limitert, ami a kliens IP címe alapján korlátoz
+limiter = Limiter(key_func=get_remote_address)
+# Lekérjük a state objektumot dinamikusan, így a PyCharm nem látja a pont (.) utáni hivatkozást
+app_state = getattr(app, "state")
+# Majd hozzáadjuk a limitert
+setattr(app_state, "limiter", limiter)
+@app.exception_handler(RateLimitExceeded)
+async def custom_rate_limit_handler(request: Request, exc: RateLimitExceeded):
+    _ = request, exc
+    return JSONResponse(
+        status_code=429,
+        content={"detail": "Too many requests. Please wait a minute before trying again."}
+    )
 
 # --- CORS SETTINGS ---
 app.add_middleware(
@@ -64,9 +82,10 @@ async def root():
     return {"message": "David Varga AI Portfolio API is online!"}
 
 @app.post("/chat")
-async def chat_endpoint(request: ChatRequest):
+@limiter.limit("5/minute")  # Legfeljebb 5 kérés engedélyezett percenként IP-címenként
+async def chat_endpoint(request: Request, chat_request: ChatRequest):
     try:
-        user_input = bleach.clean(request.message)
+        user_input = bleach.clean(chat_request.message)
         
         # 1. Releváns részek keresése az adatbázisban
         docs = vector_db.as_retriever(search_kwargs={'k': 5}).invoke(user_input)

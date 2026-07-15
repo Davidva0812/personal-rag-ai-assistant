@@ -61,3 +61,26 @@ def test_chat_endpoint_empty_and_special_chars():
     response_special = client.post("/chat", json={"message": special_message})
     assert response_special.status_code == 200
     assert "response" in response_special.json()
+
+
+def test_rate_limiting():
+    # Megkeressük a limiterünket az appon keresztül, és teljesen kiürítjük a memóriáját
+    # Így tiszta lappal indul ez a specifikus teszt!
+    from main import app
+    limiter = getattr(app.state, "limiter", None)
+    if limiter:
+        limiter.reset()
+
+    # Gyorsan küldünk 5 kérést, aminek mindnek át kell mennie (200 OK vagy 500/200 a Groq állapottól függően, de NEM 429)
+    for _ in range(5):
+        response = client.post("/chat", json={"message": "Szia, ki vagy te?"})
+        assert response.status_code != 429
+
+    # A 6. kérésnek viszont már AZONNAL el kell buknia 429 Too Many Requests-el!
+    over_limit_response = client.post("/chat",
+                                      json={"message": "Szia, ki vagy te?"})
+    assert over_limit_response.status_code == 429
+
+    # Ellenőrizzük, hogy a mi egyedi hibaüzenetünk jön-e vissza
+    json_data = over_limit_response.json()
+    assert "Too many requests" in json_data["detail"]

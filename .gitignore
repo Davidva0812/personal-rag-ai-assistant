@@ -21,6 +21,11 @@ build/
 .DS_Store
 Thumbs.db
 
+# SQLite test databases és Chroma temporary files
+*.db
+*.sqlite3
+.chroma/
+
 # IDEs
 .vscode/
 .idea/
