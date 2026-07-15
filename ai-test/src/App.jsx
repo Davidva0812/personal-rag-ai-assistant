@@ -25,7 +25,7 @@ function App() {
 
     try {
       // API call to the Python (FastAPI) backend
-      const response = await axios.post('http://127.0.0.1:8000/chat', {
+      const response = await axios.post('http://localhost:10000/chat', {
         message: input
       });
 
