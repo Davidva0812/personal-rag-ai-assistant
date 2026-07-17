@@ -66,21 +66,16 @@ def reset_rate_limiter():
     storage = getattr(limiter, "_storage", None)
     if not storage:
         return
-    # 1. próba: limits library MemoryStorage
     inner = getattr(storage, "_storage", None)
     if isinstance(inner, dict):
         inner.clear()
         return
-    # 2. próba: reset() metódus
     if hasattr(storage, "reset"):
         storage.reset()
         return
-    # 3. próba: clear() metódus
     if hasattr(storage, "clear"):
         storage.clear()
         return
-    # 4. fallback: patch-eljük a limiter check_limit-jét ideiglenesen
-    # (ez nem kellene hogy kellő legyen a fenti 3 után, de biztonsági háló)
 
 
 @pytest.fixture(autouse=True)
