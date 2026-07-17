@@ -24,7 +24,10 @@ A high-performance **RAG (Retrieval-Augmented Generation)** application designed
 - **Backend**: [FastAPI](https://fastapi.tiangolo.com/) (High-performance Python framework)
 - **AI Engine**: [Groq Cloud](https://groq.com/) (Llama 3 models)
 - **Orchestration**: [LangChain](https://www.langchain.com/) (Document processing & Text splitting)
+- **Vector Database**: [ChromaDB](https://www.trychroma.com/) (Local persistent vector store for RAG context extraction).
 - **Styling**: Tailwind CSS / Bootstrap
+- **External Memory**: [Upstash Redis](https://upstash.com/) (Cloud-hosted Redis for secure, token-authenticated session management).
+- **Rate Limiting**: [Slowapi](https://github.com/laurentS/slowapi) (Middleware for FastAPI rate protection).
 
 ---
 

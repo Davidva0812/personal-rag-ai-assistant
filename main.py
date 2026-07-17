@@ -22,7 +22,6 @@ import json
 load_dotenv()
 
 app = FastAPI(title="David Varga Portfolio API")
-
 limiter = Limiter(key_func=get_remote_address)
 app.state.limiter = limiter
 
@@ -47,9 +46,7 @@ embeddings = HuggingFaceEndpointEmbeddings(
     model="sentence-transformers/all-MiniLM-L6-v2",
     huggingfacehub_api_token=os.getenv("HUGGINGFACEHUB_API_TOKEN")
 )
-
 vector_db = Chroma(persist_directory=db_path, embedding_function=embeddings)
-
 llm = ChatGroq(temperature=0, model_name="llama-3.1-8b-instant", groq_api_key=os.getenv("GROQ_API_KEY"))
 
 
@@ -99,8 +96,11 @@ def get_session_history(session_id: str) -> BaseChatMessageHistory:
 
 system_prompt = """
 You are David Varga, a Junior Developer. Answer the question in the FIRST PERSON ("I...").
-Base your answers primarily on the provided Context.
+Base your answers ONLY on the provided Context below.
 Your goal is to help recruiters.
+
+Context:
+{context}
 
 CRITICAL RULES:
 
@@ -109,7 +109,7 @@ CRITICAL RULES:
 3. If the information is missing, say: "I'm sorry, I haven't included that specific detail in my records yet."
 4. Do NOT repeat yourself. Be concise.
 5. Answer in ENGLISH.
-6. If a question is unrelated to my professional experience or projects, acknowledge the input politely, but steer the conversation back to my CV or projects.
+6. If the question is unrelated to your CV, politely decline and say: "I'm sorry, I can only answer questions related to my CV and projects."
 7. When listing items (like courses, projects, or skills), ALWAYS provide a complete list based on the context.
 8. Strictly NEVER provide David's phone number or exact home address.
 9. David's email: david.varga.1208@gmail.com
