@@ -51,7 +51,7 @@ vector_db = Chroma(persist_directory=db_path, embedding_function=embeddings)
 #llm = ChatGroq(temperature=0, model_name="llama3-70b-8192", groq_api_key=os.getenv("GROQ_API_KEY"))
 # TÖRÖLD: llm = ChatGroq(...)
 llm = ChatGoogleGenerativeAI(
-    model="gemini-1.5-flash",
+    model="models/gemini-1.5-flash",
     google_api_key=os.getenv("GEMINI_API_KEY"),
     temperature=0
 )
