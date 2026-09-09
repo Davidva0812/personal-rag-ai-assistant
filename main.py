@@ -18,6 +18,7 @@ from langchain_core.runnables.history import RunnableWithMessageHistory
 from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
 from upstash_redis import Redis
 import json
+from langchain_google_genai import ChatGoogleGenerativeAI
 
 load_dotenv()
 
@@ -47,7 +48,13 @@ embeddings = HuggingFaceEndpointEmbeddings(
     huggingfacehub_api_token=os.getenv("HUGGINGFACEHUB_API_TOKEN")
 )
 vector_db = Chroma(persist_directory=db_path, embedding_function=embeddings)
-llm = ChatGroq(temperature=0, model_name="llama3-70b-8192", groq_api_key=os.getenv("GROQ_API_KEY"))
+#llm = ChatGroq(temperature=0, model_name="llama3-70b-8192", groq_api_key=os.getenv("GROQ_API_KEY"))
+# TÖRÖLD: llm = ChatGroq(...)
+llm = ChatGoogleGenerativeAI(
+    model="gemini-1.5-flash",
+    google_api_key=os.getenv("GEMINI_API_KEY"),
+    temperature=0
+)
 
 # --- UPSTASH REDIS CHAT HISTORY ---
 # Az Upstash REST API-t közvetlenül használjuk, mivel a RedisChatMessageHistory
