@@ -21,6 +21,8 @@ from langchain_core.runnables.history import RunnableWithMessageHistory
 from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
 from upstash_redis import Redis
 
+print("1. importok kész", flush=True)
+
 load_dotenv()
 
 logging.basicConfig(level=logging.INFO)
@@ -57,19 +59,23 @@ db_path = "./chroma_db"
 # FONTOS: az embedding modellnek UGYANAZNAK kell lennie, amivel a chroma_db
 # fel lett építve (ingestáláskor és lekérdezéskor is). Modellváltáskor a
 # chroma_db-t újra kell építeni.
-EMBEDDING_MODEL = os.getenv("EMBEDDING_MODEL", "models/gemini-embedding-001")
+EMBEDDING_MODEL = os.getenv("EMBEDDING_MODEL", "models/text-embedding-004")
+
 embeddings = GoogleGenerativeAIEmbeddings(
     model=EMBEDDING_MODEL,
     google_api_key=os.getenv("GEMINI_API_KEY"),
 )
+print("2. embeddings kész", flush=True)
 vector_db = Chroma(persist_directory=db_path, embedding_function=embeddings)
 retriever = vector_db.as_retriever(search_kwargs={"k": 5})
+print("3. chroma kész", flush=True)
 
 llm = ChatGroq(
     temperature=0,
     model_name="llama-3.3-70b-versatile",
     groq_api_key=os.getenv("GROQ_API_KEY"),
 )
+print("4. llm kész", flush=True)
 
 
 # --- UPSTASH REDIS CHAT HISTORY ---
@@ -157,6 +163,9 @@ class ChatRequest(BaseModel):
     message: str = Field(..., min_length=1, max_length=1000)
     # A frontend generálja látogatónként (pl. crypto.randomUUID())
     session_id: str = Field(..., min_length=8, max_length=64, pattern=r"^[A-Za-z0-9_-]+$")
+
+
+print("5. app kész, indulhat a szerver", flush=True)
 
 
 @app.get("/")
