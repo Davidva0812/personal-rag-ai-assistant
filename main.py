@@ -71,7 +71,7 @@ print("3. chroma kész", flush=True)
 
 llm = ChatGroq(
     temperature=0,
-    model_name="llama-3.3-70b-versatile",
+    model_name=os.getenv("GROQ_MODEL", "openai/gpt-oss-120b"),
     groq_api_key=os.getenv("GROQ_API_KEY"),
 )
 print("4. llm kész", flush=True)
