@@ -59,8 +59,7 @@ db_path = "./chroma_db"
 # FONTOS: az embedding modellnek UGYANAZNAK kell lennie, amivel a chroma_db
 # fel lett építve (ingestáláskor és lekérdezéskor is). Modellváltáskor a
 # chroma_db-t újra kell építeni.
-EMBEDDING_MODEL = os.getenv("EMBEDDING_MODEL", "models/text-embedding-004")
-
+EMBEDDING_MODEL = os.getenv("EMBEDDING_MODEL", "models/gemini-embedding-001")
 embeddings = GoogleGenerativeAIEmbeddings(
     model=EMBEDDING_MODEL,
     google_api_key=os.getenv("GEMINI_API_KEY"),
