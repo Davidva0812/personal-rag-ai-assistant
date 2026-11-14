@@ -1,42 +1,51 @@
 import os
+import json
+import logging
+
 import uvicorn
 import bleach
+from dotenv import load_dotenv
 from fastapi import FastAPI, HTTPException, Request
 from fastapi.responses import JSONResponse
-from pydantic import BaseModel, Field
-from dotenv import load_dotenv
 from fastapi.middleware.cors import CORSMiddleware
-from langchain_groq import ChatGroq
-from langchain_huggingface import HuggingFaceEndpointEmbeddings
-from langchain_chroma import Chroma
+from pydantic import BaseModel, Field
 from slowapi import Limiter
 from slowapi.util import get_remote_address
 from slowapi.errors import RateLimitExceeded
+from langchain_groq import ChatGroq
+from langchain_google_genai import GoogleGenerativeAIEmbeddings
+from langchain_chroma import Chroma
 from langchain_core.chat_history import BaseChatMessageHistory
-from langchain_core.messages import BaseMessage
+from langchain_core.messages import BaseMessage, messages_from_dict, message_to_dict
 from langchain_core.runnables.history import RunnableWithMessageHistory
 from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
 from upstash_redis import Redis
-import json
-from langchain_google_genai import ChatGoogleGenerativeAI
-from langchain_google_genai import GoogleGenerativeAIEmbeddings
 
 load_dotenv()
+
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger("portfolio")
 
 app = FastAPI(title="David Varga Portfolio API")
 limiter = Limiter(key_func=get_remote_address)
 app.state.limiter = limiter
 
+
 @app.exception_handler(RateLimitExceeded)
 async def custom_rate_limit_handler(request: Request, exc: RateLimitExceeded):
     return JSONResponse(
         status_code=429,
-        content={"detail": "Too many requests. Please wait a minute before trying again."}
+        content={"detail": "Too many requests. Please wait a minute before trying again."},
     )
+
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["https://davidva0812.github.io", "http://localhost:3000", "http://localhost:5173"],
+    allow_origins=[
+        "https://davidva0812.github.io",
+        "http://localhost:3000",
+        "http://localhost:5173",
+    ],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -44,23 +53,25 @@ app.add_middleware(
 
 # --- AI ENGINE INITIALIZATION ---
 db_path = "./chroma_db"
+
+# FONTOS: az embedding modellnek UGYANAZNAK kell lennie, amivel a chroma_db
+# fel lett építve (ingestáláskor és lekérdezéskor is). Modellváltáskor a
+# chroma_db-t újra kell építeni.
+EMBEDDING_MODEL = os.getenv("EMBEDDING_MODEL", "models/text-embedding-004")
+
 embeddings = GoogleGenerativeAIEmbeddings(
-    model="models/text-embedding-004",
-    google_api_key=os.getenv("GEMINI_API_KEY")
+    model=EMBEDDING_MODEL,
+    google_api_key=os.getenv("GEMINI_API_KEY"),
 )
 vector_db = Chroma(persist_directory=db_path, embedding_function=embeddings)
+retriever = vector_db.as_retriever(search_kwargs={"k": 5})
+
 llm = ChatGroq(
     temperature=0,
     model_name="llama-3.3-70b-versatile",
-    groq_api_key=os.getenv("GROQ_API_KEY")
+    groq_api_key=os.getenv("GROQ_API_KEY"),
 )
 
-# TÖRÖLD: llm = ChatGroq(...)
-#llm = ChatGoogleGenerativeAI(
-#   model="gemini-1.5-flash",
-#   google_api_key=os.getenv("GEMINI_API_KEY"),
-#   temperature=0
-#)
 
 # --- UPSTASH REDIS CHAT HISTORY ---
 # Az Upstash REST API-t közvetlenül használjuk, mivel a RedisChatMessageHistory
@@ -78,28 +89,27 @@ class UpstashChatMessageHistory(BaseChatMessageHistory):
 
     @property
     def messages(self) -> list[BaseMessage]:
-        from langchain_core.messages import messages_from_dict
         try:
             raw = self._redis.lrange(self.session_id, 0, -1)
             if not raw:
                 return []
             return messages_from_dict([json.loads(m) for m in raw])
         except Exception:
+            logger.exception("Failed to read chat history")
             return []
 
     def add_message(self, message: BaseMessage) -> None:
-        from langchain_core.messages import message_to_dict
         try:
             self._redis.rpush(self.session_id, json.dumps(message_to_dict(message)))
             self._redis.expire(self.session_id, self.ttl)
         except Exception:
-            pass
+            logger.exception("Failed to write chat history")
 
     def clear(self) -> None:
         try:
             self._redis.delete(self.session_id)
         except Exception:
-            pass
+            logger.exception("Failed to clear chat history")
 
 
 def get_session_history(session_id: str) -> BaseChatMessageHistory:
@@ -131,7 +141,7 @@ CRITICAL RULES:
 prompt_template = ChatPromptTemplate.from_messages([
     ("system", system_prompt),
     MessagesPlaceholder(variable_name="chat_history"),
-    ("human", "{message}")
+    ("human", "{message}"),
 ])
 
 chain = prompt_template | llm
@@ -146,6 +156,8 @@ chain_with_history = RunnableWithMessageHistory(
 
 class ChatRequest(BaseModel):
     message: str = Field(..., min_length=1, max_length=1000)
+    # A frontend generálja látogatónként (pl. crypto.randomUUID())
+    session_id: str = Field(..., min_length=8, max_length=64, pattern=r"^[A-Za-z0-9_-]+$")
 
 
 @app.get("/")
@@ -159,18 +171,22 @@ async def chat_endpoint(request: Request, chat_request: ChatRequest):
     try:
         user_input = bleach.clean(chat_request.message)
 
-        docs = vector_db.as_retriever(search_kwargs={'k': 5}).invoke(user_input)
-        context = "\n\n".join([doc.page_content for doc in docs])
+        docs = retriever.invoke(user_input)
+        context = "\n\n".join(doc.page_content for doc in docs)
 
         response = chain_with_history.invoke(
             {"message": user_input, "context": context},
-            config={"configurable": {"session_id": "test-session-123"}}
+            config={"configurable": {"session_id": chat_request.session_id}},
         )
 
         return {"response": response.content}
-    except Exception as e:
-        print(f"Error details: {str(e)}")
-        raise HTTPException(status_code=500, detail=str(e))
+    except Exception:
+        # A részletek csak a szerver logba kerülnek, a kliens általános üzenetet kap.
+        logger.exception("Chat endpoint error")
+        raise HTTPException(
+            status_code=500,
+            detail="Something went wrong. Please try again later.",
+        )
 
 
 if __name__ == "__main__":
