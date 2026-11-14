@@ -51,7 +51,7 @@ embeddings = GoogleGenerativeAIEmbeddings(
 vector_db = Chroma(persist_directory=db_path, embedding_function=embeddings)
 llm = ChatGroq(
     temperature=0,
-    model_name="openai/gpt-oss-120b",
+    model_name="llama-3.3-70b-versatile",
     groq_api_key=os.getenv("GROQ_API_KEY")
 )
 
